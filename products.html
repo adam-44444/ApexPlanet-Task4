@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Listing Filter</title>
+    <style>
+        :root { --bg: #f8fafc; --text: #0f172a; --card: #ffffff; --accent: #3b82f6; --border: #e2e8f0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h1 { margin: 0; }
+        .back-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .controls { display: flex; gap: 15px; margin-bottom: 30px; background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        select { padding: 10px; font-size: 1rem; border-radius: 6px; border: 1px solid var(--border); outline: none; flex: 1; }
+        select:focus { border-color: var(--accent); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: var(--card); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .emoji { font-size: 4rem; margin-bottom: 15px; }
+        h3 { margin: 0 0 10px 0; }
+        .price { font-size: 1.2rem; font-weight: 800; color: var(--accent); margin: 0 0 5px 0; }
+        .rating { color: #f59e0b; margin: 0; font-weight: 600; }
+        .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: #64748b; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tech & Gear Store</h1>
+            <a href="index.html" class="back-link">← Back to Portfolio</a>
+        </div>
+        
+        <div class="controls">
+            <select id="categoryFilter">
+                <option value="all">All Categories</option>
+                <option value="electronics">Electronics</option>
+                <option value="clothing">Clothing</option>
+                <option value="accessories">Accessories</option>
+            </select>
+            <select id="sortOption">
+                <option value="default">Sort By...</option>
+                <option value="rating">Top Rated</option>
+                <option value="priceLowHigh">Price: Low to High</option>
+                <option value="priceHighLow">Price: High to Low</option>
+            </select>
+        </div>
+
+        <div id="productGrid" class="grid"></div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "Noise Cancelling Headphones", category: "electronics", price: 299, rating: 4.8, image: "🎧" },
+            { id: 2, name: "Mechanical Keyboard", category: "electronics", price: 120, rating: 4.9, image: "⌨️" },
+            { id: 3, name: "Developer T-Shirt", category: "clothing", price: 25, rating: 4.5, image: "👕" },
+            { id: 4, name: "Gaming Mouse", category: "electronics", price: 60, rating: 4.7, image: "🖱️" },
+            { id: 5, name: "Smart Watch", category: "accessories", price: 199, rating: 4.4, image: "⌚" },
+            { id: 6, name: "Blue Jeans", category: "clothing", price: 45, rating: 4.2, image: "👖" },
+            { id: 7, name: "Backpack", category: "accessories", price: 85, rating: 4.6, image: "🎒" },
+            { id: 8, name: "4K Monitor", category: "electronics", price: 450, rating: 4.9, image: "🖥️" }
+        ];
+
+        const productGrid = document.getElementById('productGrid');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortOption = document.getElementById('sortOption');
+
+        function renderProducts(items) {
+            if (items.length === 0) {
+                productGrid.innerHTML = '<div class="no-results">No products found matching your criteria.</div>';
+                return;
+            }
+
+            productGrid.innerHTML = items.map(p => `
+                <div class="product-card">
+                    <div class="emoji">${p.image}</div>
+                    <h3>${p.name}</h3>
+                    <p class="price">$${p.price}</p>
+                    <p class="rating">⭐ ${p.rating}</p>
+                </div>
+            `).join('');
+        }
+
+        function updateView() {
+            let filtered = [...products]; // clone array to avoid mutating original
+            
+            // Filter
+            const cat = categoryFilter.value;
+            if (cat !== 'all') {
+                filtered = filtered.filter(p => p.category === cat);
+            }
+            
+            // Sort
+            const sort = sortOption.value;
+            if (sort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+            else if (sort === 'priceLowHigh') filtered.sort((a, b) => a.price - b.price);
+            else if (sort === 'priceHighLow') filtered.sort((a, b) => b.price - a.price);
+            
+            renderProducts(filtered);
+        }
+
+        categoryFilter.addEventListener('change', updateView);
+        sortOption.addEventListener('change', updateView);
+
+        // Initial render
+        updateView();
+    </script>
+</body>
+</html>

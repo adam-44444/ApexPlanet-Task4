@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note-Taking App (Local Storage)</title>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #10b981; --text: #f8fafc; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; margin-top: 0; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        textarea { width: 100%; height: 100px; margin-bottom: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; padding: 12px; box-sizing: border-box; font-family: inherit; resize: vertical; }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        button { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; transition: background 0.3s; }
+        button:hover { background: #059669; }
+        .note-card { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .note-card p { margin: 0; white-space: pre-wrap; width: 80%; }
+        .delete-btn { background: #ef4444; width: auto; padding: 6px 12px; font-size: 0.85rem; }
+        .delete-btn:hover { background: #dc2626; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Local Notes</h2>
+        <div class="input-section">
+            <textarea id="noteInput" placeholder="Write a note... It will be saved in your browser!"></textarea>
+            <button id="addNoteBtn">Save Note</button>
+        </div>
+        <div id="notesContainer"></div>
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+    </div>
+
+    <script>
+        const noteInput = document.getElementById('noteInput');
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const notesContainer = document.getElementById('notesContainer');
+
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+        function renderNotes() {
+            notesContainer.innerHTML = '';
+            notes.forEach((note, index) => {
+                const noteEl = document.createElement('div');
+                noteEl.className = 'note-card';
+                noteEl.innerHTML = `
+                    <p>${note}</p>
+                    <button class="delete-btn" onclick="deleteNote(${index})">Delete</button>
+                `;
+                notesContainer.appendChild(noteEl);
+            });
+        }
+
+        function addNote() {
+            const text = noteInput.value.trim();
+            if (text) {
+                notes.push(text);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                noteInput.value = '';
+                renderNotes();
+            }
+        }
+
+        function deleteNote(index) {
+            notes.splice(index, 1);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            renderNotes();
+        }
+
+        addNoteBtn.addEventListener('click', addNote);
+        renderNotes();
+    </script>
+</body>
+</html>
